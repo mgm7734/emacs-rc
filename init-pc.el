@@ -1,15 +1,1 @@
-(load "~/.emacs.d/shared-init")
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(column-number-mode t)
- '(package-selected-packages
-   (quote
-    (color-theme-sanityinc-solarized color-theme-modern color-theme-sanityinc-solarizedcolor-theme-sanityfinc-solarized sanityinc-solarized-dark frame-fns use-package)))
- '(show-paren-mode t))
-(custom-set-faces
- ;;'(default ((t (:family "Source Code Pro" :foundry "outline" :slant normal :weight normal :height 113 :width normal)))))
- ;; 11pt -> 113, 10pt ->98
- '(default ((t (:family "Source Code Pro" :foundry "outline" :slant normal :weight normal :height 113  :width normal)))))
+(setq custom-safe-themes   '("4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" "4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" "679ee3b86b4b34661a68ba45bbd373eab0284caee6249139b2a090c9ddd35ce0" "84890723510d225c45aaff941a7e201606a48b973f0121cb9bcb0b9399be8cba" default))(load "~/.emacs.d/shared-init")

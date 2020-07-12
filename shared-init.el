@@ -14,7 +14,7 @@
 (when (not package-archive-contents)
   (package-refresh-contents)
   (package-install 'use-package))
-(require 'use-package)
+(eval-when-compile (require 'use-package))
 (setq use-package-always-ensure t)
 
 (transient-mark-mode 1) ;; No region when it is not highlighted
@@ -85,8 +85,9 @@
 ;; ;(my-color-theme)
 ;;  )
 ;;(use-package color-theme-modern :ensure)
-(use-package color-theme-sanityinc-solarized :ensure)
-(load-theme 'sanityinc-solarized-dark 1)
+;;(use-package color-theme-sanityinc-solarized :ensure)
+;;(load-theme 'sanityinc-solarized-dark 1)
+(load-theme 'zenburn)
 
 (use-package editorconfig
   :ensure t
@@ -95,13 +96,12 @@
   (add-hook 'text-mode-hook (editorconfig-mode 1))
   )
 
+;;(use-package eglot :ensure t)
+
 (use-package expand-region
   :ensure t
   :bind (("C-=" . er/expand-region)
           ("C-+" . er/contract-region)))
-
-
-
 
 (use-package evil 
   :ensure t
@@ -111,6 +111,7 @@
   (setq evil-want-integration nil)
   :config
   ;; Use tab to move between links in help mode.
+  (evil-set-initial-state 'dired-mode 'emacs)
   (evil-define-key 'motion help-mode-map (read-kbd-macro "TAB") 'forward-button)
   (setq evil-default-cursor (quote (t "orange"))
         evil-normal-state-cursor '("DarkGoldenrod2" box)
@@ -181,12 +182,14 @@
   :mode "\\.hs\\'"
   :config
   (add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
-  (use-package intero :ensure t)
-  (add-hook 'haskell-mode-hook 'intero-mode))
+  ;(use-package intero :ensure t)
+					;(add-hook 'haskell-mode-hook 'intero-mode)
+  )
 
 ;;; ido
 (if t
     (progn
+      (use-package flx-ido :ensure t)
       (setq ido-enable-flex-matching t)
       (setq ido-everywhere t)
       (ido-mode 1)
@@ -218,8 +221,7 @@
     :demand)
   (use-package counsel-projectile :ensure t))
 
-(use-package projectile :ensure t
-  :bind (("C-x p p" . projectile-switch-project)) )
+;;(use-package projectile :ensure t :bind (("C-c p" . projectile-command-map)))
 
 ;;; ivy (w/ counsel, swiper)
 
@@ -286,6 +288,7 @@
                                    "《-》"
                                  (format "《%s》"
                                          (projectile-project-name)))))
+  :bind (("C-c p" . projectile-command-map))
   :config
   (projectile-global-mode t)
   (add-to-list 'projectile-globally-ignored-directories "node_modules"))
@@ -300,12 +303,20 @@
 	  (lambda ()
 	    (electric-indent-mode)))
 
+(use-package rust-mode
+  :ensure t
+  :mode  "\\.rs")
+(use-package cargo
+  :after rust-mode :defer t
+  :hook (rust-mode . cargo-minor-mode))
+
+
 ;;; scala / ensime
-(use-package ensime :disabled
-             :ensure t
-             :pin melpa-stable)
-(use-package sbt-mode :pin melpa :disabled)
-(use-package scala-mode :disabled :pin melpa)
+;;(use-package ensime :disabled
+;;             :ensure t
+;;             :pin melpa-stable)
+;;(use-package sbt-mode :pin melpa :disabled)
+;;(use-package scala-mode :disabled :pin melpa)
 
 ;;(require 'ensime)
 ;;(add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
@@ -331,3 +342,40 @@
   :config
   (yas-global-mode 1))
 (use-package yasnippet-snippets :disabled)
+
+;;;;;;;;;;; Go from https://github.com/golang/tools/blob/master/gopls/doc/emacs.md
+(use-package lsp-mode
+  :ensure t
+  :commands (lsp lsp-deferred)
+  :hook (go-mode . lsp-deferred))
+
+;; Set up before-save hooks to format buffer and add/delete imports.
+;; Make sure you don't have other gofmt/goimports hooks enabled.
+(defun lsp-go-install-save-hooks ()
+  (add-hook 'before-save-hook #'lsp-format-buffer t t)
+  (add-hook 'before-save-hook #'lsp-organize-imports t t))
+(add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+
+;; Optional - provides fancier overlays.
+(use-package lsp-ui
+  :ensure t
+  :commands lsp-ui-mode)
+
+;; Company mode is a standard completion package that works well with lsp-mode.
+(use-package company
+  :ensure t
+  :config
+  ;; Optionally enable completion-as-you-type behavior.
+  (setq company-idle-delay 0)
+  (setq company-minimum-prefix-length 1))
+
+(use-package typescript-mode
+  :ensure
+  :mode "\\.ts")
+
+(use-package tide 
+  :ensure t
+  :after (typescript-mode company flycheck)
+  :hook ((typescript-mode . tide-setup)
+         (typescript-mode . tide-hl-identifier-mode)
+         (before-save . tide-format-before-save)))
