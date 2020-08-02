@@ -87,7 +87,8 @@
 ;;(use-package color-theme-modern :ensure)
 ;;(use-package color-theme-sanityinc-solarized :ensure)
 ;;(load-theme 'sanityinc-solarized-dark 1)
-(load-theme 'zenburn)
+(use-package zenburn-theme
+  :ensure t)
 
 (use-package editorconfig
   :ensure t
