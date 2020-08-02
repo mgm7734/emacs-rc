@@ -104,6 +104,11 @@
   :bind (("C-=" . er/expand-region)
           ("C-+" . er/contract-region)))
 
+(use-package elm-mode
+  :ensure t
+  :mode "\\.elm$"
+  )
+
 (use-package evil 
   :ensure t
   :init
@@ -139,7 +144,7 @@
   (use-package evil-magit :ensure t)
   (evil-mode 1))
 
-(use-package go-mode
+(use-package go-mode 
   :ensure t
   :config
   (if (featurep 'evil)
@@ -256,6 +261,9 @@
          ("C-x M-g" . magit-dispatch-popup)))
 (use-package markdown-mode :defer t)
 
+(use-package nix-mode
+  :ensure t
+  :mode "\\.nix\\'")
 ;;; octave
 (add-to-list 'auto-mode-alist '("\\.m$" . octave-mode))
 
@@ -293,6 +301,17 @@
   :config
   (projectile-global-mode t)
   (add-to-list 'projectile-globally-ignored-directories "node_modules"))
+
+(use-package purescript-mode
+  :ensure t
+  :mode "\\.purs\\'" )
+
+(use-package psc-ide :disabled
+  :ensure t
+  :mode (("\\.purs$" . psc-ide-mode))
+  :hook (lambda ()
+	  (flycheck-mode)
+	  (turn-on-purescript-indentation)))
 
 ;;; rails
 ;(add-hook 'projectile-mode-hook 'projectile-rails-on)
