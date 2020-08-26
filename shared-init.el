@@ -1,5 +1,5 @@
 ;;;; package manager
-(package-initialize)
+;(package-initialize)
 (add-to-list 'load-path "~/.emacs.d/lib")
 (require 'package)
 (setq
@@ -89,6 +89,7 @@
 ;;(load-theme 'sanityinc-solarized-dark 1)
 (use-package zenburn-theme
   :ensure t)
+(load-theme 'zenburn 1)
 
 (use-package editorconfig
   :ensure t
@@ -187,11 +188,29 @@
   ; :ensure t
   :mode "\\.hs\\'"
   :config
-  (add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
-  ;(use-package intero :ensure t)
-					;(add-hook 'haskell-mode-hook 'intero-mode)
-  )
-
+  (add-hook 'haskell-mode-hook 'turn-on-haskell-indentation))
+;; LSP
+(use-package flycheck
+  :ensure t
+  :init
+  (global-flycheck-mode t))
+(use-package yasnippet
+  :ensure t)
+(use-package lsp-mode
+  :ensure t
+  :hook (haskell-mode . lsp)
+  :commands lsp)
+(use-package lsp-ui
+  :ensure t
+  :commands lsp-ui-mode)
+(use-package lsp-haskell
+ :ensure t
+ :config
+ (setq lsp-haskell-process-path-hie "ghcide")
+ (setq lsp-haskell-process-args-hie '())
+ ;; Comment/uncomment this line to see interactions between lsp client/server.
+ ;;(setq lsp-log-io t)
+)
 ;;; ido
 (if t
     (progn
@@ -364,10 +383,10 @@
 (use-package yasnippet-snippets :disabled)
 
 ;;;;;;;;;;; Go from https://github.com/golang/tools/blob/master/gopls/doc/emacs.md
-(use-package lsp-mode
-  :ensure t
-  :commands (lsp lsp-deferred)
-  :hook (go-mode . lsp-deferred))
+;;(use-package lsp-mode
+;;  :ensure t
+;;  :commands (lsp lsp-deferred)
+;;  :hook (go-mode . lsp-deferred))
 
 ;; Set up before-save hooks to format buffer and add/delete imports.
 ;; Make sure you don't have other gofmt/goimports hooks enabled.
@@ -377,10 +396,6 @@
 (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
 
 ;; Optional - provides fancier overlays.
-(use-package lsp-ui
-  :ensure t
-  :commands lsp-ui-mode)
-
 ;; Company mode is a standard completion package that works well with lsp-mode.
 (use-package company
   :ensure t
