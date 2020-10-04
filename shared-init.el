@@ -109,9 +109,12 @@
   :ensure t
   :mode "\\.elm$"
   )
+(use-package flycheck-elm
+  :config
+  :hook (flycheck . flycheck-elm-setup))
 
 (use-package evil 
-  :ensure t
+  :disabled
   :init
   (setq evil-want-C-w-in-emacs-state t)
   (setq evil-want-keybinding nil)
@@ -318,7 +321,7 @@
                                          (projectile-project-name)))))
   :bind (("C-c p" . projectile-command-map))
   :config
-  (projectile-global-mode t)
+  (projectile-mode t)
   (add-to-list 'projectile-globally-ignored-directories "node_modules"))
 
 (use-package purescript-mode
