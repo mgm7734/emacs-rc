@@ -1,34 +1,49 @@
-;;;; package manager
-;(package-initialize)
-(add-to-list 'load-path "~/.emacs.d/lib")
+;;(add-to-list 'load-path "~/.emacs.d/lib")
+
+;;; Set up package management
 (require 'package)
-(setq
- package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
-                     ("melpa" . "http://melpa.org/packages/")
-                     ("melpa-stable" . "http://stable.melpa.org/packages/")
-                     ("org" . "http://orgmode.org/elpa/")
-                     )
- package-archive-priorities '(("melpa-stable" . 1)))
-;ooopsie
+(add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/") t)
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+(add-to-list 'package-archives '("melpa-stable" . "http://stable.melpa.org/packages/"))
+(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
+ ;;package-archive-priorities '(("melpa-stable" . 1)))
 (package-initialize)
-(when (not package-archive-contents)
+
+(unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
-(eval-when-compile (require 'use-package))
+
+(eval-when-compile
+  (require 'use-package))
+(require 'diminish)
+(require 'bind-key)
 (setq use-package-always-ensure t)
 
-(transient-mark-mode 1) ;; No region when it is not highlighted
 
-(show-paren-mode t)
+;;; misc simple
+(blink-cursor-mode t)
+(column-number-mode 1)                        ;; Show column-number in the mode line
+(delete-selection-mode t)                     ;; Make it so that selected text are removed on new entries
 (electric-pair-mode)
-(column-number-mode t)
-(set-language-environment "UTF-8")
-;;(prefer-coding-system 'utf-8)
-(setq help-window-select t)
-
 (global-set-key "\C-M" 'newline-and-indent)
+(global-set-key (kbd "C-x C-b") 'ibuffer)
+(global-set-key [f11] 'visual-line-mode)      ;; Toggle nice soft line wrapping
+(global-set-key [f12] 'toggle-truncate-lines) ;; Toggle-truncate-lines keybinding
+(global-set-key [f1] 'menu-bar-mode)          ;; Toggle menu bar mode with f1
 (global-unset-key "\C-Z")
+(scroll-bar-mode -1)                          ;; Removes the scroll bar
+(set-language-environment "UTF-8")
+(setq blink-matching-delay .1)                ;; Matching parenthesis timer default 1
 (setq confirm-kill-emacs 'y-or-n-p)
+(setq help-window-select t)
+(setq-default fill-column 100)                 ;; Make newline insertion in the right place
+(setq-default indent-tabs-mode nil)           ;; Make sure no tabs are present.
+(setq-default tab-width 4)
+(show-paren-mode t)
+(tool-bar-mode -1)                            ;; Hide toolbar in graphics mode
+(transient-mark-mode 1) ;; No region when it is not highlighted
+;(menu-bar-mode -1)                            ;; Remove the menu bar, Remove this when menu becomes part of the global menu.
+;;(prefer-coding-system 'utf-8)
 
 (defun remove-dos-eol ()
   "Do not show ^M in files containing mixed UNIX and DOS line endings."
@@ -38,7 +53,6 @@
 (dolist (hook-var '(clojure-mode-hook shell-mode-hook))
   (add-hook hook-var 'remove-dos-eol))
 
-(global-set-key (kbd "C-x C-b") 'ibuffer)
 
 ;;; compare-windows
 ;;;(set-var compare-ignore-whitespace t)
@@ -93,10 +107,8 @@
 
 (use-package editorconfig
   :ensure t
-  :init
-  (add-hook 'prog-mode-hook (editorconfig-mode 1))
-  (add-hook 'text-mode-hook (editorconfig-mode 1))
-  )
+  :config
+  (editorconfig-mode))
 
 ;;(use-package eglot :ensure t)
 
@@ -114,7 +126,6 @@
   :hook (flycheck . flycheck-elm-setup))
 
 (use-package evil 
-  :disabled
   :init
   (setq evil-want-C-w-in-emacs-state t)
   (setq evil-want-keybinding nil)
@@ -195,8 +206,10 @@
 ;; LSP
 (use-package flycheck
   :ensure t
-  :init
-  (global-flycheck-mode t))
+  :config
+  (global-flycheck-mode t)
+  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
+
 (use-package yasnippet
   :ensure t)
 (use-package lsp-mode
@@ -324,16 +337,27 @@
   (projectile-mode t)
   (add-to-list 'projectile-globally-ignored-directories "node_modules"))
 
+;;; Purescript
 (use-package purescript-mode
-  :ensure t
-  :mode "\\.purs\\'" )
+  :ensure 
+  :mode "\\.purs\\'"
+  :init
+  (use-package repl-toggle :disabled
+    :config
+    (add-to-list 'rtog/mode-repl-alist '(purescript-mode . psci)))
+  (use-package psci)
+  :config
+  (add-hook 'purescript-mode-hook
+	    (lambda ()
+	      (psc-ide-mode)
+	      (company-mode)
+	      (flycheck-mode)
+	      (inferior-psci-mode)
+	      (turn-on-purescript-indentation)
+          (customize-set-variable 'psc-ide-add-import-on-completion t)))
+  (use-package psc-ide :ensure t))
 
-(use-package psc-ide :disabled
-  :ensure t
-  :mode (("\\.purs$" . psc-ide-mode))
-  :hook (lambda ()
-	  (flycheck-mode)
-	  (turn-on-purescript-indentation)))
+
 
 ;;; rails
 ;(add-hook 'projectile-mode-hook 'projectile-rails-on)
