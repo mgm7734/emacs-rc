@@ -1,4 +1,4 @@
-;;(add-to-list 'load-path "~/.emacs.d/lib")
+;;add-to-list 'load-path "~/.emacs.d/lib")
 
 ;;; Set up package management
 (require 'package)
@@ -15,10 +15,13 @@
 
 (eval-when-compile
   (require 'use-package))
-(require 'diminish)
+;(require 'diminish)
 (require 'bind-key)
 (setq use-package-always-ensure t)
 
+
+;;; delight the mode line
+(use-package delight)
 
 ;;; misc simple
 (blink-cursor-mode t)
@@ -107,6 +110,7 @@
 
 (use-package editorconfig
   :ensure t
+  :delight " EC"
   :config
   (editorconfig-mode))
 
@@ -324,9 +328,8 @@
 
 
 (use-package projectile
-  :ensure t
   :init
-  (setq projectile-mode-line '(:eval
+  '(setq projectile-mode-line '(:eval
                                (if
                                    (file-remote-p default-directory)
                                    "《-》"
@@ -335,7 +338,9 @@
   :bind (("C-c p" . projectile-command-map))
   :config
   (projectile-mode t)
-  (add-to-list 'projectile-globally-ignored-directories "node_modules"))
+  (add-to-list 'projectile-globally-ignored-directories "node_modules")
+  ; :delight '(:eval (concat " " (projectile-project-name)))
+  )
 
 ;;; Purescript
 (use-package purescript-mode

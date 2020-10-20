@@ -67,8 +67,9 @@
     ("C:/Program Files/Git/usr/bin" "c:/Program Files/AdoptOpenJDK/jdk-11.0.8.10-openj9/bin" "C:/Windows/system32" "C:/Windows" "C:/Windows/System32/Wbem" "C:/Windows/System32/WindowsPowerShell/v1.0/" "C:/Program Files/Git/cmd" "C:/Program Files/Git/mingw64/bin" "C:/Program Files/Git/usr/bin" "C:/Program Files/PuTTY/" "C:/Go/bin" "C:/TDM-GCC-64/bin" "C:/HashiCorp/Vagrant/bin" "C:/Windows/System32/WindowsPowerShell/v1.0/" "f:/opt/nvm" "C:/Program Files/nodejs" "C:/Program Files (x86)/Elm/0.19.1/bin" "C:/Users/MGM/AppData/Roaming/local/bin" "C:/Users/MGM/.cargo/bin" "F:/Ruby22/bin" "C:/Users/MGM/AppData/Local/Programs/Python/Python38-32" "C:/Users/MGM/AppData/Local/Programs/Python/Python38-32/Scripts" "C:/Users/MGM/go/bin" "f:/opt/nvm" "C:/Program Files/nodejs" "c:/opt/emacs-26.2-x86_64/libexec/emacs/26.2/x86_64-w64-mingw32")))
  '(package-selected-packages
    (quote
-    (repl-toggle psci diminish counsel-projectile org-evil lsp-haskell yasnippet flycheck-elm nix-mode purescript-mode psc-ide elm-mode tide typescript-mode lsp-ui lsp-mode rust-mode flx-ido sunburn-theme zenburn-theme color-theme-sanityinc-solarized color-theme-modern color-theme-sanityinc-solarizedcolor-theme-sanityfinc-solarized sanityinc-solarized-dark frame-fns use-package)))
+    (avy diminish counsel-projectile org-evil lsp-haskell yasnippet flycheck-elm nix-mode purescript-mode psc-ide elm-mode tide typescript-mode lsp-ui lsp-mode rust-mode flx-ido sunburn-theme zenburn-theme color-theme-sanityinc-solarized color-theme-modern color-theme-sanityinc-solarizedcolor-theme-sanityfinc-solarized sanityinc-solarized-dark frame-fns use-package)))
  '(projectile-indexing-method (quote hybrid))
+ '(projectile-mode-line-prefix " P")
  '(purescript-mode-hook
    (quote
     (turn-on-purescript-indent turn-on-purescript-indentation)))
