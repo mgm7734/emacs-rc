@@ -440,7 +440,7 @@
   :ensure
   :mode "\\.ts")
 
-(use-package tide  :disable
+(use-package tide  :disabled
   :ensure t
   :after (typescript-mode company flycheck)
   :hook ((typescript-mode . tide-setup)
