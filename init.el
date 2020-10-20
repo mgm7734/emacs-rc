@@ -40,7 +40,7 @@
 ;;(el-get 'sync)
 
 (load (expand-file-name "shared-init.el" user-emacs-directory))
-(org-babel-load-file (expand-file-name "emacs-init.org" user-emacs-directory) )
+;(org-babel-load-file (expand-file-name "emacs-init.org" user-emacs-directory) )
 ;; load up emacs init
 ;(message "Loading emacs-init")
 
