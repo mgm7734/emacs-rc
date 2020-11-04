@@ -1,4 +1,3 @@
-;;;; package manager
 (require 'package)
 (setq
  package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
@@ -6,7 +5,8 @@
                      ("melpa-stable" . "http://stable.melpa.org/packages/")
                      ("org" . "http://orgmode.org/elpa/")
                      )
- package-archive-priorities '(("melpa-stable" . 1)))
+ ;; package-archive-priorities '(("melpa-stable" . 1))
+ )
 ;ooopsie
 (package-initialize)
 (when (not package-archive-contents)
@@ -15,8 +15,9 @@
 (require 'use-package)
 (setq use-package-always-ensure t)
 
+;;; basic shit
+(setq-default fill-column 100)
 (transient-mark-mode 1) ;; No region when it is not highlighted
-
 (show-paren-mode t)
 (electric-pair-mode)
 (column-number-mode t)
@@ -61,7 +62,9 @@
 
 
 ;;; ns (osx/gnustep) stuff
-(when (eq 'ns window-system)
+(when (memq window-system '(mac ns x))
+  (use-package exec-path-from-shell)
+  (exec-path-from-shell-initialize)
   (setq ns-alternate-modifier 'super)
   (setq ns-command-modifier 'meta)
   (global-set-key [(meta ?`)] 'other-frame))
@@ -97,6 +100,11 @@
   :bind (("C-=" . er/expand-region)
           ("C-+" . er/contract-region)))
 
+(use-package xah-fly-keys :disabled
+  :config
+  (xah-fly-keys-set-layout "qwerty")
+  (xah-fly-keys 1)
+  (define-key xah-fly-key-map (kbd "C-SPC SPC") 'xah-fly-command-mode-activate-no-hook))
 
 (use-package evil
   :ensure t
@@ -116,7 +124,12 @@
         evil-replace-state-cursor '("chocolate" (hbar . 2))
         evil-hybrid-state-cursor '("SkyBlue2" (bar . 2))
         evil-evilified-state-cursor '("LightGoldenrod3" box))
-                                        ;evil-operator-state-cursor evil-half-cursor
+  (use-package god-mode
+    :init
+    (use-package evil-god-state
+      :config
+      (evil-define-key 'god global-map [escape] 'evil-god-state-bail)
+      (evil-define-key 'normal global-map "," 'evil-execute-in-god-state))
   (if t
       (use-package evil-collection :ensure t)
     (mapc (lambda (mode) (evil-set-initial-state mode 'emacs))
@@ -130,7 +143,7 @@
     (mapc (lambda (mode) (evil-set-initial-state mode 'normal))
           '(git-commit-mode)))
   (use-package evil-magit :ensure t)
-  (evil-mode 1))
+  (evil-mode 1)))
 
 (use-package go-mode
   :ensure t
@@ -176,8 +189,17 @@
   :mode "\\.hs\\'"
   :config
   (add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
-  (use-package intero :ensure t)
-  (add-hook 'haskell-mode-hook 'intero-mode))
+  ;(use-package intero :ensure t)
+  ;(add-hook 'haskell-mode-hook 'intero-mode)
+  )
+(use-package lsp-mode
+  :ensure t
+  :config
+  (use-package lsp-ui
+    :ensure t))
+(use-package lsp-haskell
+  :ensure t
+  :hook (haskell-mode . lsp))
 
 ;;; ido
 (if t
@@ -213,9 +235,6 @@
     :demand)
   (use-package counsel-projectile :ensure t))
 
-(use-package projectile :ensure t
-  :bind (("C-x p p" . projectile-switch-project)) )
-
 ;;; ivy (w/ counsel, swiper)
 
 (add-hook 'java-mode-hook (lambda ()
@@ -234,7 +253,6 @@
   :ensure t :requires js2-mode
   )
 (use-package xref-js2 :ensure t :requires js2-mode)
-
 
 (use-package rjsx-mode
   :ensure t
@@ -272,7 +290,8 @@
 
 ;;; shell mode
 (autoload 'poly-sh-mode "poly-sh-mode" "Poly BASH mode" t)
-(add-hook 'shell-mode-hook 'poly-sh-mode)
+;;; Fucks shell command:
+;;; (add-hook 'shell-mode-hook 'poly-sh-mode)
 
 (use-package smartparens :disabled
   :ensure t
@@ -283,14 +302,14 @@
 ;;;(smartparens-global-mode t)
 
 (use-package plantuml-mode :ensure t
-  :mode (("\\.uml\\'" . plantuml-mode))
+  :mode (("\\.puml\\'" . plantuml-mode))
   :config
   (unless (eq 'w32 window-system)
-    (setq plantuml-jar-path "~/opt/plantuml/plantuml.jar")) )
-
+    (setq plantuml-jar-path "~/.local/share/plantuml/plantuml.jar")) )
 
 (use-package projectile
   :ensure t
+  :bind (("C-c p" . projectile-command-map))
   :init
   (setq projectile-mode-line '(:eval
                                (if
@@ -301,6 +320,26 @@
   :config
   (projectile-global-mode t)
   (add-to-list 'projectile-globally-ignored-directories "node_modules"))
+
+;;; Purescript
+(use-package purescript-mode
+  :ensure 
+  :mode "\\.purs\\'"
+  :init
+  (use-package repl-toggle :disabled
+    :config
+    (add-to-list 'rtog/mode-repl-alist '(purescript-mode . psci)))
+  (use-package psci)
+  :config
+  (add-hook 'purescript-mode-hook
+	    (lambda ()
+	      (psc-ide-mode)
+	      (company-mode)
+	      (flycheck-mode)
+	      (inferior-psci-mode)
+	      (turn-on-purescript-indentation)
+          (customize-set-variable 'psc-ide-add-import-on-completion t)))
+  (use-package psc-ide :ensure t))
 
 ;;; rails
 ;(add-hook 'projectile-mode-hook 'projectile-rails-on)
