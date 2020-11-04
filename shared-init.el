@@ -1,4 +1,4 @@
-;;add-to-list 'load-path "~/.emacs.d/lib")
+ ;;add-to-list 'load-path "~/.emacs.d/lib")
 
 ;;; Set up package management
 (require 'package)
@@ -129,7 +129,16 @@
   :config
   :hook (flycheck . flycheck-elm-setup))
 
-(use-package evil 
+(use-package xah-fly-keys :enabled
+  :config 
+ (xah-fly-keys-set-layout "qwerty")
+  (xah-fly-keys 1)
+  (define-key xah-fly-insert-map (kbd "C-SPC SPC") 'xah-fly-command-mode-activate)
+  )
+;(use-package which-key
+;  :connfig:
+;  (which-key-mode 1))
+(use-package evil
   :init
   (setq evil-want-C-w-in-emacs-state t)
   (setq evil-want-keybinding nil)
@@ -161,6 +170,13 @@
     (mapc (lambda (mode) (evil-set-initial-state mode 'normal))
           '(git-commit-mode)))
   (use-package evil-magit :ensure t)
+  (use-package god-mode :disabled
+    :config
+    (use-package evil-god-state
+      :config
+      (evil-define-key 'god global-map [escape] 'evil-god-state-bail)
+      (evil-define-key 'normal global-map "," 'evil-execute-in-god-state)))
+  
   (evil-mode 1))
 
 (use-package go-mode 
@@ -298,7 +314,12 @@
 (use-package magit :defer t
   :bind (("C-x g" . magit-status)
          ("C-x M-g" . magit-dispatch-popup)))
-(use-package markdown-mode :defer t)
+(use-package markdown-mode
+  :init
+  (add-hook 'markdown-mode-hook
+            (lambda ()
+              (markdown-toggle-url-hiding t)
+              (auto-fill-mode t))) )
 
 (use-package nix-mode
   :ensure t
@@ -360,7 +381,9 @@
 	      (inferior-psci-mode)
 	      (turn-on-purescript-indentation)
           (customize-set-variable 'psc-ide-add-import-on-completion t)))
-  (use-package psc-ide :ensure t))
+  (use-package psc-ide :ensure t
+    :config
+    (define-key psc-ide-mode-map (kbd "C-C g") 'psc-ide-goto-definition)))
 
 
 
