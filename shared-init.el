@@ -9,11 +9,6 @@
  )
 ;ooopsie
 (package-initialize)
-(when (not package-archive-contents)
-  (package-refresh-contents)
-  (package-install 'use-package))
-(require 'use-package)
-(setq use-package-always-ensure t)
 
 ;;; basic shit
 (setq-default fill-column 100)
@@ -39,11 +34,17 @@
 
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 
+(when (not package-archive-contents)
+  (package-refresh-contents)
+  (package-install 'use-package))
+(require 'use-package)
+(setq use-package-always-ensure t)
+
 ;;; compare-windows
 ;;;(set-var compare-ignore-whitespace t)
 
 ;;; any window system
-(use-package frame-fns
+'(use-package frame-fns
   :if window-system
   :config
   (global-unset-key "\C-z")
@@ -60,7 +61,12 @@
     (load "frame-cmds")
     (load "frame-cmd-binds")))
 
-
+(when window-system
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1)
+  '(setq-default indicate-buffer-boundaries 'left)
+  (setq-default indicate-empty-lines t)
+  )
 ;;; ns (osx/gnustep) stuff
 (when (memq window-system '(mac ns x))
   (use-package exec-path-from-shell)
@@ -73,6 +79,9 @@
 (when (eq 'w32 window-system)
   (setq w32-apps-modifier 'hyper))
 
+;;; Help
+
+(use-package which-key)
 
 (use-package clojure :disabled
   :mode ("\\.cljs\\.hl$" . clojure-mode)
@@ -129,7 +138,8 @@
     (use-package evil-god-state
       :config
       (evil-define-key 'god global-map [escape] 'evil-god-state-bail)
-      (evil-define-key 'normal global-map "," 'evil-execute-in-god-state))
+      (evil-define-key '(normal motion) global-map " " 'evil-execute-in-god-state)
+      (evil-define-key 'insert global-map (kbd "C-SPC") 'evil-normal-state))
   (if t
       (use-package evil-collection :ensure t)
     (mapc (lambda (mode) (evil-set-initial-state mode 'emacs))
@@ -212,6 +222,7 @@
                                " [Matched]" " [Not readable]" " [Too big]"
                                " [Confirm]"))
                                         ;(setq ido-use-filename-at-point nil)
+      (setq ido-case-fold t)
       (defun ido-disable-line-trucation ()
         (set (make-local-variable 'truncate-lines) nil))
       (add-hook 'ido-minibuffer-setup-hook 'ido-disable-line-trucation))
@@ -276,7 +287,8 @@
 
 (use-package magit :defer t
   :bind (("C-x g" . magit-status)
-         ("C-x M-g" . magit-dispatch-popup)))
+         ("C-x M-g" . magit-dispatch-popup)
+	 ("C-c g " . magit-file-dispatch)))
 (use-package markdown-mode :defer t)
 
 ;;; octave
@@ -302,10 +314,17 @@
 ;;;(smartparens-global-mode t)
 
 (use-package plantuml-mode :ensure t
-  :mode (("\\.puml\\'" . plantuml-mode))
+  :mode (("\\.puml$" . plantuml-mode))
   :config
-  (unless (eq 'w32 window-system)
-    (setq plantuml-jar-path "~/.local/share/plantuml/plantuml.jar")) )
+  (when (eq 'ns window-system)
+    (setq plantuml-jar-path (expand-file-name "~/.local/share/plantuml/plantuml.jar"))
+    (setq org-plantuml-jar-path plantuml-jar-path)
+    (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))))
+  
+'(eval-after-load 'org
+      (org-babel-do-load-languages
+       'org-babel-load-languages
+       '((plantuml . t))))
 
 (use-package projectile
   :ensure t
@@ -318,7 +337,7 @@
                                  (format "《%s》"
                                          (projectile-project-name)))))
   :config
-  (projectile-global-mode t)
+  (projectile-mode)
   (add-to-list 'projectile-globally-ignored-directories "node_modules"))
 
 ;;; Purescript

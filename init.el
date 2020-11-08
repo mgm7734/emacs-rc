@@ -1,5 +1,4 @@
-;;;(add-to-list 'load-path "/Users/mgm/Dropbox/lib/emacs/")
-(add-to-list 'load-path "~/.emacs.d/lib")
+;(add-to-list 'load-path "~/.emacs.d/lib")
 (load "~/.emacs.d/shared-init")
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -16,7 +15,7 @@
  '(js-switch-indent-offset 2)
  '(markdown-command "/usr/local/bin/markdown")
  '(package-selected-packages
-   '(spacemacs-theme evil-god-state god-mode psc-ide purescript-mode lsp-haskell lsp-ui lsp-ui-mode lsp-mode intero ess egison-mode eglot js2-refactor xref-js2 poly-markdown polymode sunburn-theme zenburn-theme expand-region markdown-preview-mode edit-indirect avy plantuml-mode evil-col lection rjsx-mode markdown-mode haskell-mode graphviz-dot-mode flx fiplr find-things-fast evil-magit editorconfig counsel-projectile color-theme-solarized color-theme-sanityinc-solarized color-theme-modern))
+   '(which-key 0blayout ghub org org-babel-eval-in-repl spacemacs-theme evil-god-state god-mode psc-ide purescript-mode lsp-haskell lsp-ui lsp-ui-mode lsp-mode intero ess egison-mode eglot js2-refactor xref-js2 poly-markdown polymode sunburn-theme zenburn-theme expand-region markdown-preview-mode edit-indirect avy plantuml-mode evil-col lection rjsx-mode markdown-mode haskell-mode graphviz-dot-mode flx fiplr find-things-fast evil-magit editorconfig counsel-projectile color-theme-solarized color-theme-sanityinc-solarized color-theme-modern))
  '(safe-local-variable-values
    '((js2-additional-externs "db" "printjson" "printjsononeline" "DBQuery")
      (js2-additional-externs "require" "Ti" "exports" "L" "setTimeout" "$" "_" "WPATH" "__filename")
