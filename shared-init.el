@@ -1,3 +1,7 @@
+(set-variable 'custom-file (expand-file-name "customization.el" user-emacs-directory))
+(if (file-exists-p custom-file)
+    (load custom-file))
+
 (require 'package)
 (setq
  package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
@@ -40,8 +44,13 @@
 (require 'use-package)
 (setq use-package-always-ensure t)
 
-;;; compare-windows
-;;;(set-var compare-ignore-whitespace t)
+(add-hook 'comint-output-filter-functions #'comint-truncate-buffer)
+
+;;; compare-windows ignore whitespace by default
+(customize-set-variable 'compare-ignore-whitespace t)
+
+;;;; truncate comint buffers at 1024 lines
+(add-hook 'comint-output-filter-functions #'comint-truncate-buffer)
 
 ;;; any window system
 '(use-package frame-fns
@@ -71,17 +80,19 @@
 (when (memq window-system '(mac ns x))
   (use-package exec-path-from-shell)
   (exec-path-from-shell-initialize)
-  (setq ns-alternate-modifier 'super)
-  (setq ns-command-modifier 'meta)
+  (customize-set-variable 'ns-alternate-modifier 'super)
+  (customize-set-variable 'ns-command-modifier 'meta)
   (global-set-key [(meta ?`)] 'other-frame))
 
 ;;; Windows stuff
 (when (eq 'w32 window-system)
-  (setq w32-apps-modifier 'hyper))
+  (customize-set-variable 'w32-apps-modifier 'hyper))
 
 ;;; Help
 
-(use-package which-key)
+(use-package which-key
+  :config
+  (which-key-mode 1))
 
 (use-package clojure :disabled
   :mode ("\\.cljs\\.hl$" . clojure-mode)
@@ -95,7 +106,7 @@
  ;(my-color-theme)
   )
 ;(load-theme 'sanityinc-solarized-dark 1)
-(load-theme 'zenburn t)
+;(load-theme 'zenburn t)
 
 (use-package editorconfig
   :ensure t
@@ -118,6 +129,7 @@
 (use-package evil
   :ensure t
   :init
+  (setq evil-want-keybinding nil)
   (setq evil-want-C-w-in-emacs-state t)
   :config
   ;; Use tab to move between links in help mode.
@@ -139,9 +151,14 @@
       :config
       (evil-define-key 'god global-map [escape] 'evil-god-state-bail)
       (evil-define-key '(normal motion) global-map " " 'evil-execute-in-god-state)
-      (evil-define-key 'insert global-map (kbd "C-SPC") 'evil-normal-state))
+      (evil-define-key 'insert global-map (kbd "C-SPC") 'evil-normal-state)))
   (if t
-      (use-package evil-collection :ensure t)
+      (use-package evil-collection
+        :ensure t
+        :after evil
+        :config
+        (evil-collection-init)
+        )
     (mapc (lambda (mode) (evil-set-initial-state mode 'emacs))
           '(inferior-emacs-lisp-mode
             comint-mode
@@ -152,8 +169,8 @@
             eww-mode))
     (mapc (lambda (mode) (evil-set-initial-state mode 'normal))
           '(git-commit-mode)))
-  (use-package evil-magit :ensure t)
-  (evil-mode 1)))
+  (use-package evil-magit :ensure t :after magit)
+  (evil-mode 1))
 
 (use-package go-mode
   :ensure t
@@ -248,8 +265,9 @@
 
 ;;; ivy (w/ counsel, swiper)
 
-(add-hook 'java-mode-hook (lambda ()
-                            (setq c-basic-offset 4)))
+(add-hook 'java-mode-hook
+          (lambda ()
+            (setq c-basic-offset 4)))
 
 ;;; javascript
 (use-package js2-mode
@@ -285,14 +303,15 @@
 ;	  (lambda ()
 ;	    (setq jsx-indent-level 2)))
 
-(use-package magit :defer t
+(use-package magit 
   :bind (("C-x g" . magit-status)
-         ("C-x M-g" . magit-dispatch-popup)
+         ;("C-x M-g" . magit-dispatch-popup)
 	 ("C-c g " . magit-file-dispatch)))
+
 (use-package markdown-mode :defer t)
 
 ;;; octave
-(add-to-list 'auto-mode-alist '("\\.m$" . octave-mode))
+;(add-to-list 'auto-mode-alist '("\\.m$" . octave-mode))
 
 ;;; paredit
 ;;(eval-after-load "paredit.el"  '(require 'paredit-menu))
