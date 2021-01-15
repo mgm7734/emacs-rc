@@ -1,7 +1,3 @@
-(set-variable 'custom-file (expand-file-name "customization.el" user-emacs-directory))
-(if (file-exists-p custom-file)
-    (load custom-file))
-
 (require 'package)
 (setq
  package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
@@ -105,8 +101,6 @@
   ;(load "my-color-theme")
  ;(my-color-theme)
   )
-;(load-theme 'sanityinc-solarized-dark 1)
-;(load-theme 'zenburn t)
 
 (use-package editorconfig
   :ensure t
@@ -420,3 +414,12 @@
   :config
   (yas-global-mode 1))
 (use-package yasnippet-snippets :disabled)
+
+(load-theme 'zenburn t)
+
+;;;;(set-variable 'custom-file (expand-file-name "customization.el" user-emacs-directory))
+(setq custom-file (expand-file-name "customization.el" user-emacs-directory))
+(if (file-exists-p custom-file)
+    (load custom-file))
+
+;(load-theme 'sanityinc-solarized-dark 1)
