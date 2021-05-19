@@ -10,7 +10,15 @@
 ;ooopsie
 (package-initialize)
 
+;;; fonts
+(let ((font "Menlo-11"))
+  (add-to-list 'default-frame-alist (cons 'font font))
+  ;(set-face-attribute 'default nil :font font)
+  (set-frame-font font)) 
+
 ;;; basic shit
+;; (setq default-directory "~/")
+;; (setq command-line-default-directory "~/")
 (setq-default fill-column 100)
 (transient-mark-mode 1) ;; No region when it is not highlighted
 (show-paren-mode t)
@@ -84,11 +92,73 @@
 (when (eq 'w32 window-system)
   (customize-set-variable 'w32-apps-modifier 'hyper))
 
-;;; Help
+(use-package evil
+  :ensure t
+  :demand
+  :init
+  (setq evil-want-keybinding nil)
+  (setq evil-want-C-w-in-emacs-state t)
+  :config
+  ;; Use tab to move between links in help mode.
+  (evil-set-initial-state 'dired-mode 'emacs)
+  (evil-set-initial-state 'git-commit-mode 'insert)
+  (evil-define-key 'motion help-mode-map (read-kbd-macro "TAB") 'forward-button)
+  (setq evil-default-cursor (quote (t "orange"))
+        evil-normal-state-cursor '("DarkGoldenrod2" box)
+        evil-insert-state-cursor '("chartreuse3" (bar . 2))
+        evil-visual-state-cursor '("gray" hbar)
+        evil-motion-state-cursor '("plum" box)
+        evil-emacs-state-cursor '("red" box) ; SkyBlue2 in spacemeacs
+        evil-replace-state-cursor '("chocolate" (hbar . 2))
+        evil-hybrid-state-cursor '("SkyBlue2" (bar . 2))
+        evil-evilified-state-cursor '("LightGoldenrod3" box))
+  
+  (if t
+      (use-package evil-collection
+        :ensure t
+        :after evil
+        :config
+        (evil-collection-init)
+        )
+    (mapc (lambda (mode) (evil-set-initial-state mode 'emacs))
+          '(inferior-emacs-lisp-mode
+            comint-mode
+            shell-mode
+            git-rebase-mode
+            term-mode
+            magit-branch-manager-mode
+            eww-mode))
+    (mapc (lambda (mode) (evil-set-initial-state mode 'normal))
+          '(git-commit-mode)))
+  (use-package evil-magit :ensure t :after magit)
+  (evil-mode 1))
 
 (use-package which-key
+  :diminish (which-key-mode . "Ꙍ")
   :config
   (which-key-mode 1))
+
+(use-package general
+  ;; :after 'evil
+  :demand :ensure t
+  :config
+  (general-evil-setup t)
+  (general-define-key
+   :prefix "SPC" :non-normal-prefix "s-SPC"
+   :states '(motion insert emacs)
+   "" '(nil :which-key "main")
+   "f" '(nil :ignore t :which-key "file")
+   "fb" 'ivy-switch-buffer
+   "ff" 'find-file
+   "fo" 'find-file-other-window
+   "fr" 'revert-buffer
+   "em" 'mc/editlines
+   "w"  evil-window-map
+   "p"  '(projectile-command-map :which-key "projectile")
+   )
+  )
+
+;;; Help
 
 (use-package clojure :disabled
   :mode ("\\.cljs\\.hl$" . clojure-mode)
@@ -119,52 +189,6 @@
   (xah-fly-keys-set-layout "qwerty")
   (xah-fly-keys 1)
   (define-key xah-fly-key-map (kbd "C-SPC SPC") 'xah-fly-command-mode-activate-no-hook))
-
-(use-package evil
-  :ensure t
-  :init
-  (setq evil-want-keybinding nil)
-  (setq evil-want-C-w-in-emacs-state t)
-  :config
-  ;; Use tab to move between links in help mode.
-  (evil-set-initial-state 'dired-mode 'emacs)
-  (evil-set-initial-state 'git-commit-mode 'insert)
-  (evil-define-key 'motion help-mode-map (read-kbd-macro "TAB") 'forward-button)
-  (setq evil-default-cursor (quote (t "orange"))
-        evil-normal-state-cursor '("DarkGoldenrod2" box)
-        evil-insert-state-cursor '("chartreuse3" (bar . 2))
-        evil-visual-state-cursor '("gray" hbar)
-        evil-motion-state-cursor '("plum" box)
-        evil-emacs-state-cursor '("red" box) ; SkyBlue2 in spacemeacs
-        evil-replace-state-cursor '("chocolate" (hbar . 2))
-        evil-hybrid-state-cursor '("SkyBlue2" (bar . 2))
-        evil-evilified-state-cursor '("LightGoldenrod3" box))
-  (use-package god-mode
-    :init
-    (use-package evil-god-state
-      :config
-      (evil-define-key 'god global-map [escape] 'evil-god-state-bail)
-      (evil-define-key '(normal motion) global-map " " 'evil-execute-in-god-state)
-      (evil-define-key 'insert global-map (kbd "C-SPC") 'evil-normal-state)))
-  (if t
-      (use-package evil-collection
-        :ensure t
-        :after evil
-        :config
-        (evil-collection-init)
-        )
-    (mapc (lambda (mode) (evil-set-initial-state mode 'emacs))
-          '(inferior-emacs-lisp-mode
-            comint-mode
-            shell-mode
-            git-rebase-mode
-            term-mode
-            magit-branch-manager-mode
-            eww-mode))
-    (mapc (lambda (mode) (evil-set-initial-state mode 'normal))
-          '(git-commit-mode)))
-  (use-package evil-magit :ensure t :after magit)
-  (evil-mode 1))
 
 (use-package go-mode
   :ensure t
@@ -223,7 +247,7 @@
   :hook (haskell-mode . lsp))
 
 ;;; ido
-(if t
+(if nil
     (progn
       (setq ido-enable-flex-matching t)
       (setq ido-everywhere t)
@@ -237,7 +261,7 @@
       (defun ido-disable-line-trucation ()
         (set (make-local-variable 'truncate-lines) nil))
       (add-hook 'ido-minibuffer-setup-hook 'ido-disable-line-trucation))
-  (use-package ivy :disabled
+  (use-package ivy
     :ensure t
     :diminish (ivy-mode . "")
     :config
@@ -253,11 +277,11 @@
           recentf-max-saved-items 100
           ivy-count-format "(%d/%d) "
           projectile-completion-system 'ivy))
-  (use-package ivy-hydra :disabled
+  (use-package ivy-hydra :ensure t
     :demand)
   (use-package counsel-projectile :ensure t))
 
-;;; ivy (w/ counsel, swiper)
+;;; ivy (w/ counsel, swiper
 
 (add-hook 'java-mode-hook
           (lambda ()
@@ -304,6 +328,9 @@
 
 (use-package markdown-mode :defer t)
 
+;;;; oCAML / ReScript
+(use-package "reason-mode" :disabled)
+
 ;;; octave
 ;(add-to-list 'auto-mode-alist '("\\.m$" . octave-mode))
 
@@ -326,18 +353,20 @@
 ;;;(require 'smartparens-config)
 ;;;(smartparens-global-mode t)
 
-(use-package plantuml-mode :ensure t
+(use-package plantuml-mode
   :mode (("\\.puml$" . plantuml-mode))
   :config
+  (require 'org)
   (when (eq 'ns window-system)
     (setq plantuml-jar-path (expand-file-name "~/.local/share/plantuml/plantuml.jar"))
     (setq org-plantuml-jar-path plantuml-jar-path)
     (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))))
   
 '(eval-after-load 'org
-      (org-babel-do-load-languages
+   (progn
+     (org-babel-do-load-languages
        'org-babel-load-languages
-       '((plantuml . t))))
+       '((plantuml . t)))))
 
 (use-package projectile
   :ensure t
@@ -364,13 +393,14 @@
   (use-package psci)
   :config
   (add-hook 'purescript-mode-hook
-	    (lambda ()
-	      (psc-ide-mode)
-	      (company-mode)
-	      (flycheck-mode)
-	      (inferior-psci-mode)
-	      (turn-on-purescript-indentation)
-          (customize-set-variable 'psc-ide-add-import-on-completion t)))
+            (lambda ()
+              (psc-ide-mode)
+              (company-mode)
+              (flycheck-mode)
+              (inferior-psci-mode)
+              (turn-on-purescript-indentation)
+              (setq psc-ide-use-npm-bin t)
+              (customize-set-variable 'psc-ide-add-import-on-completion t)))
   (use-package psc-ide :ensure t))
 
 ;;; rails
@@ -388,7 +418,15 @@
              :ensure t
              :pin melpa-stable)
 (use-package sbt-mode :pin melpa :disabled)
-(use-package scala-mode :disabled :pin melpa)
+(use-package scala-mode )
+
+(use-package rust-mode
+  :ensure t
+  :mode  "\\.rs")
+(use-package cargo
+  :after rust-mode :defer t
+  :hook (rust-mode . cargo-minor-mode))
+
 
 ;;(require 'ensime)
 ;;(add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
@@ -415,7 +453,9 @@
   (yas-global-mode 1))
 (use-package yasnippet-snippets :disabled)
 
-(load-theme 'zenburn t)
+(condition-case ex
+    (load-theme 'zenburn t)
+    ('error (message (format  "ignoring zenburn bug: [%s]" ex))))
 
 ;;;;(set-variable 'custom-file (expand-file-name "customization.el" user-emacs-directory))
 (setq custom-file (expand-file-name "customization.el" user-emacs-directory))
