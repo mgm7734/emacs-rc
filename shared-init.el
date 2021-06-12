@@ -27,6 +27,7 @@
 (set-language-environment "UTF-8")
 ;;(prefer-coding-system 'utf-8)
 (setq help-window-select t)
+(toggle-word-wrap t)
 
 (global-set-key "\C-M" 'newline-and-indent)
 (global-unset-key "\C-Z")
@@ -138,6 +139,7 @@
   :config
   (which-key-mode 1))
 
+;;; general: key binding 
 (use-package general
   ;; :after 'evil
   :demand :ensure t
@@ -150,6 +152,7 @@
    "f" '(nil :ignore t :which-key "file")
    "fb" 'ivy-switch-buffer
    "ff" 'find-file
+   "fk" 'kill-buffer
    "fo" 'find-file-other-window
    "fr" 'revert-buffer
    "em" 'mc/editlines
@@ -320,6 +323,25 @@
 ;(add-hook 'jsx-mode-hook
 ;	  (lambda ()
 ;	    (setq jsx-indent-level 2)))
+
+(use-package tide
+  ;:mode ("\\.ts\\'" . tide-mode)
+  :init
+  (defun setup-tide-mode ()
+    (interactive)
+    (tide-setup)
+    (flycheck-mode +1)
+    (setq flycheck-check-syntax-automatically '(save mode-enabled))
+    (eldoc-mode +1)
+    (tide-hl-identifier-mode +1)
+    ;; company is an optional dependency. You have to
+    ;; install it separately via package-install
+    ;; `M-x package-install [ret] company`
+    (company-mode +1))
+  :hook (typescript-mode . setup-tide-mode)
+  :config
+  ;; aligns annotation to the right hand side
+  (setq company-tooltip-align-annotations t))
 
 (use-package magit 
   :bind (("C-x g" . magit-status)
