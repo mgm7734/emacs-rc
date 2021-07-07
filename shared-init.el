@@ -132,6 +132,9 @@
     (mapc (lambda (mode) (evil-set-initial-state mode 'normal))
           '(git-commit-mode)))
   (use-package evil-magit :ensure t :after magit)
+  (use-package evil-surround :ensure t
+    :config (global-evil-surround-mode 1)
+    )
   (evil-mode 1))
 
 (use-package which-key
@@ -149,6 +152,9 @@
    :prefix "SPC" :non-normal-prefix "s-SPC"
    :states '(motion insert emacs)
    "" '(nil :which-key "main")
+   "c" (general-simulate-key "C-c" :which-key "C-c-")
+   ;;; "c" (general-simulate-key 'C-c')
+   ;;custom-mode-map
    "f" '(nil :ignore t :which-key "file")
    "fb" 'ivy-switch-buffer
    "ff" 'find-file
@@ -158,6 +164,11 @@
    "em" 'mc/editlines
    "w"  evil-window-map
    "p"  '(projectile-command-map :which-key "projectile")
+   "s" '(nil :ignore t :which-key "search")
+   "ss" 'swiper
+   "x" ctl-x-map
+   ;;"y" (alist-get 33 (alist-get 3 flycheck-mode-map))
+   "y" (general-simulate-key "C-c !" :which-key "flychk")
    )
   )
 
@@ -294,15 +305,21 @@
 (use-package js2-mode
   :ensure t
   :mode ("\\.js\\'" . js2-mode)
-  :hook (js2-imenu-extras-mode js2-refactor-mode)
+  ;;; :hook js2-imenu-extras-mode setup-tide-mode)
+  :after tide
+  :init
+  (use-package flymake-eslint
+    :hook ((js2-mode prog-mode) . flymake-mode))
+  (use-package js2-refactor
+    :ensure t :requires js2-mode
+    )
+  (use-package xref-js2)
+  :hook setup-tide-mode
   :config
-  (js2r-add-keybindings-with-prefix "C-c C-r")
+  ;; configure javascript-tide checker to run after your default javascript checker
+  ;;(js2r-add-keybindings-with-prefix "C-c C-r")
   (set-default 'js2-strict-trailing-comma-warning nil)
   (set-default 'js2-strict-missing-semi-warning nil))
-(use-package js2-refactor
-  :ensure t :requires js2-mode
-  )
-(use-package xref-js2 :ensure t :requires js2-mode)
 
 (use-package rjsx-mode
   :ensure t
@@ -338,7 +355,7 @@
     ;; install it separately via package-install
     ;; `M-x package-install [ret] company`
     (company-mode +1))
-  :hook (typescript-mode . setup-tide-mode)
+  :hook ((typescript-mode js2-mode) . setup-tide-mode)
   :config
   ;; aligns annotation to the right hand side
   (setq company-tooltip-align-annotations t))
