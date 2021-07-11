@@ -17,6 +17,7 @@
  '(intero-stack-executable "~/.local/bin/stack")
  '(js-switch-indent-offset 2)
  '(js2-strict-missing-semi-warning nil)
+ '(lsp-rust-analyzer-proc-macro-enable t)
  '(markdown-command "/usr/local/bin/markdown")
  '(meta 'super t)
  '(nil "/Users/markmendel/.emacs.d/customization.el" t)
@@ -27,7 +28,7 @@
  '(org-plantuml-exec-mode 'plantuml)
  '(org-plantuml-executable-path "puml")
  '(package-selected-packages
-   '(evil-surround caml flymake-eslint tide tide-mode ripgrep multiple-cursors general ivy-hydra exec-path-from-shell psci flycheck-kotlin kotlin-mode scala-mode reason-mode cargo rust-mode magit which-key 0blayout ghub org org-babel-eval-in-repl spacemacs-theme evil-god-state god-mode psc-ide purescript-mode lsp-haskell lsp-ui lsp-ui-mode lsp-mode intero ess egison-mode eglot js2-refactor xref-js2 poly-markdown polymode sunburn-theme expand-region markdown-preview-mode edit-indirect avy plantuml-mode evil-col lection rjsx-mode markdown-mode haskell-mode graphviz-dot-mode flx fiplr find-things-fast evil-magit editorconfig counsel-projectile color-theme-solarized color-theme-sanityinc-solarized color-theme-modern))
+   '(flycheck-rust toml-mode rustic evil-surround caml flymake-eslint tide tide-mode ripgrep general ivy-hydra psci flycheck-kotlin kotlin-mode scala-mode reason-mode cargo which-key 0blayout ghub org org-babel-eval-in-repl spacemacs-theme evil-god-state god-mode lsp-ui lsp-ui-mode intero ess egison-mode eglot js2-refactor sunburn-theme expand-region markdown-preview-mode edit-indirect plantuml-mode evil-col lection markdown-mode haskell-mode graphviz-dot-mode flx fiplr find-things-fast editorconfig counsel-projectile color-theme-solarized color-theme-sanityinc-solarized color-theme-modern))
  '(psc-ide-add-import-on-completion t)
  '(psc-ide-use-npm-bin t)
  '(safe-local-variable-values
